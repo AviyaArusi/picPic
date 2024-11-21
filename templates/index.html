@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("uploadForm");
+            const loader = document.getElementById("loader");
+
+            form.addEventListener("submit", function() {
+                loader.style.display = "flex"; // הצגת loader עם flexbox
+            });
+        });
+    </script>
+</head>
+<body dir="rtl">
+    <!-- GIF טעינה מחוץ למיכל כדי לאפשר מיקום מרכזי -->
+    <div id="loader" class="loader" style="display: none;">
+        <img src="{{ url_for('static', filename='loading.gif') }}" alt="טוען...">
+    </div>
+
+    <div class="container">
+        <h1>מציאת פנים בתמונות</h1>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            <label for="folder">בחר תקייה מהמחשב שלך:</label>
+            <input type="file" id="folder" name="folder" webkitdirectory directory multiple required>
+            <label for="selfie">העלה תמונת סלפי:</label>
+            <input type="file" id="selfie" name="selfie" accept="image/*" required>
+            <input type="submit" value="מצא תמונות">
+        </form>
+
+        {% if images %}
+            <h2>תמונות שנמצאו</h2>
+            <div class="gallery">
+                {% for image in images %}
+                    <img src="{{ url_for('uploaded_file', filename=image) }}" alt="{{ image }}">
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('download_all') }}" class="download-btn">הורד את כל התמונות</a>
+        {% endif %}
+    </div>
+</body>
+</html>
